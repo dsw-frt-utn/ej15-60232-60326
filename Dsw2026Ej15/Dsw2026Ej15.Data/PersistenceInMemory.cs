@@ -19,12 +19,12 @@ public class PersistenceInMemory : IPersistence
         LoadSpecialities();
     }
 
-    public IEnumerable<Doctor> GetAllActiveDoctors()
+    public IEnumerable<Doctor> GetAllActiveDoctors() //hacer async para el ej16
     {
-        return _doctors.Where(d => d.IsActive).ToList();
+        return _doctors.Where(d => d.IsActive);
     }
 
-    public Doctor GetDoctorById(Guid id)
+    public Doctor? GetDoctorById(Guid id)
     {
         return _doctors.SingleOrDefault(d => d.Id == id);
     }

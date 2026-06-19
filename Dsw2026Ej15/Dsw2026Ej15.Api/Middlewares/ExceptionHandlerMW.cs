@@ -36,7 +36,6 @@ namespace Dsw2026Ej15.Api.Middlewares
                 message = ve.Message;
             }
 
-            // Completando lo que se ve cortado en la foto
             var result = JsonSerializer.Serialize(new { message });
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)status;

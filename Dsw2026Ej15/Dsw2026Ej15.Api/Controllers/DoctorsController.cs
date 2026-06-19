@@ -14,7 +14,7 @@ public class DoctorsController : CustomControllerBase
     {
         _persistence = persistence;
     }
-
+    //POST
     [HttpPost("doctors")]
     public async Task<IActionResult> CreateDoctor(DoctorModel.Request request)
     {
@@ -38,7 +38,7 @@ public class DoctorsController : CustomControllerBase
         return Created();
 
     }
-
+    //GET (todos)
     [HttpGet("doctors")]
     public async Task<IActionResult> GetDoctors()
     {
@@ -48,12 +48,12 @@ public class DoctorsController : CustomControllerBase
             doctor.Name,
             doctor.LicenseNumber,
             doctor.Speciality?.Name ?? "Sin especialidad"
-        )).ToList();
+        ));
 
         return Ok(responseList);
     }
 
-
+    //GET (por id)
     [HttpGet("doctors/{id}")]
     public async Task<IActionResult> GetDoctorById(Guid id)
     {
@@ -75,7 +75,7 @@ public class DoctorsController : CustomControllerBase
     }
 
     [HttpDelete("doctors/{id}")]
-
+    //DELETE
     public async Task<IActionResult> DeleteDoctor(Guid id)
     {
         var doctor = _persistence.GetDoctorById(id);
