@@ -1,7 +1,9 @@
 ﻿using Dsw2026Ej15.Api.Models;
 using Dsw2026Ej15.Domain.Entities;
+using Dsw2026Ej15.Domain.Exceptions;
 using Dsw2026Ej15.Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace Dsw2026Ej15.Api.Controllers;
 
@@ -19,14 +21,15 @@ public class DoctorsController : CustomControllerBase
         if (string.IsNullOrWhiteSpace(request.Name) ||
             string.IsNullOrWhiteSpace(request.LicenseNumber))
         {
-            return BadRequest("El campo name y licenseNumber no pueden estar vacios");
+            throw new ValidationException("El campo name y licenseNumber no pueden estar vacíos");
         }
+    
 
         var speciality = _persistence.GetSpecialityById(request.SpecialityId);
 
         if (speciality is null)
         {
-            return BadRequest("Especialidad Ingresada Inexistente");
+            throw new ValidationException("Especialidad ingresada inexistente");
         }
 
         var doctor = new Doctor(request.Name, request.LicenseNumber, speciality);

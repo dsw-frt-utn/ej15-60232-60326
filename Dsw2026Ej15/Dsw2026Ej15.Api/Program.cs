@@ -1,3 +1,4 @@
+using Dsw2026Ej15.Api.Middlewares;
 using Dsw2026Ej15.Data;
 using Dsw2026Ej15.Domain.Interfaces;
 
@@ -18,7 +19,11 @@ namespace Dsw2026Ej15.Api
             //registro como singleton, como se pide en el f
             builder.Services.AddSingleton<IPersistence, PersistenceInMemory>();
 
+            builder.Services.AddHealthChecks();
+
             var app = builder.Build();
+
+            app.UseMiddleware<ExceptionHandlerMW>();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -32,6 +37,8 @@ namespace Dsw2026Ej15.Api
 
 
             app.MapControllers();
+
+            app.MapHealthChecks("/health-check");
 
             app.Run();
         }
