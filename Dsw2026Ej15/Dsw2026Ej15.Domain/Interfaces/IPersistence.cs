@@ -11,4 +11,8 @@ public interface IPersistence
     void SaveDoctor(Doctor doctor);
 
     IEnumerable<Doctor> GetAllActiveDoctors();
+    Doctor GetDoctorById(Guid id);
+
+   
+
 }

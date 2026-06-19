@@ -24,6 +24,11 @@ public class PersistenceInMemory : IPersistence
         return _doctors.Where(d => d.IsActive).ToList();
     }
 
+    public Doctor GetDoctorById(Guid id)
+    {
+        return _doctors.SingleOrDefault(d => d.Id == id);
+    }
+
     public Speciality? GetSpecialityById(Guid id)
     {
         return _specialities.SingleOrDefault(e => e.Id == id);
@@ -52,5 +57,7 @@ public class PersistenceInMemory : IPersistence
         {
             
         }
+
     }
+
 }

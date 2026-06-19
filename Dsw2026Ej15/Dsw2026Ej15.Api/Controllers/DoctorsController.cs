@@ -16,7 +16,7 @@ public class DoctorsController : CustomControllerBase
     [HttpPost("doctors")]
     public async Task<IActionResult> CreateDoctor(DoctorModel.Request request)
     {
-        if(string.IsNullOrWhiteSpace(request.Name) ||
+        if (string.IsNullOrWhiteSpace(request.Name) ||
             string.IsNullOrWhiteSpace(request.LicenseNumber))
         {
             return BadRequest("El campo name y licenseNumber no pueden estar vacios");
@@ -50,4 +50,42 @@ public class DoctorsController : CustomControllerBase
         return Ok(responseList);
     }
 
+
+    [HttpGet("doctors/{id}")]
+    public async Task<IActionResult> GetDoctorById(Guid id)
+    {
+        var doctor = _persistence.GetDoctorById(id);
+
+        if (doctor == null || !doctor.IsActive)
+        {
+            return NotFound();
+        }
+
+        var response = new DoctorModel.Response(
+        doctor.Name,
+        doctor.LicenseNumber,
+        doctor.Speciality?.Name ?? "Sin especialidad"
+    );
+
+       
+        return Ok(response);
+    }
+
+    [HttpDelete("doctors/{id}")]
+
+    public async Task<IActionResult> DeleteDoctor(Guid id)
+    {
+        var doctor = _persistence.GetDoctorById(id);
+
+        if (doctor == null || !doctor.IsActive)
+        {
+            return NotFound();
+        }
+
+        doctor.Deactivate();
+
+
+        return NoContent(); 
+    }
 }
+
