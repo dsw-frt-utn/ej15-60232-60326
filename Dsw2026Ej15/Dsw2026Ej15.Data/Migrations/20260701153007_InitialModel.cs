@@ -16,8 +16,8 @@ namespace Dsw2026Ej15.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -29,8 +29,8 @@ namespace Dsw2026Ej15.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LicenseNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    LicenseNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     SpecialityId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
@@ -43,6 +43,12 @@ namespace Dsw2026Ej15.Data.Migrations
                         principalTable: "Specialities",
                         principalColumn: "Id");
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Doctors_LicenseNumber",
+                table: "Doctors",
+                column: "LicenseNumber",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Doctors_SpecialityId",
