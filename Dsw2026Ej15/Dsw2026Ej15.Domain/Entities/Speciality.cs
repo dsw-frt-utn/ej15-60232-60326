@@ -7,6 +7,9 @@ public class Speciality : BaseEntity
 {
     public string Name { get; init; }
     public string Description { get; init; } 
+    private Speciality()
+    {
+    }
     public Speciality(string name, string description, Guid? id = null): base(id)
     {
         Name = name;

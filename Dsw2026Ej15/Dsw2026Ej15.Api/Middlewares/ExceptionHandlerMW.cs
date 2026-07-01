@@ -27,14 +27,20 @@ namespace Dsw2026Ej15.Api.Middlewares
 
         private async Task HandleExceptionAsync(HttpContext context, Exception ex)
         {
-            HttpStatusCode status = HttpStatusCode.InternalServerError;
+            HttpStatusCode status = HttpStatusCode.InternalServerError; // larga un 500 por default para los errores no controlados
             string message = "Ocurrió un error inesperado al ejecutar la solicitud";
 
             if (ex is ValidationException ve)
             {
-                status = HttpStatusCode.BadRequest;
+                status = HttpStatusCode.BadRequest; // 400
                 message = ve.Message;
             }
+            else if (ex is EntityNotFoundException enf)
+            {
+                status = HttpStatusCode.NotFound;
+                message = enf.Message;
+            }
+
 
             var result = JsonSerializer.Serialize(new { message });
             context.Response.ContentType = "application/json";

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Dsw2026Ej15.Api.Controllers;
 
+[Route("doctors")]
 public class DoctorsController : CustomControllerBase
 {
     private readonly IPersistence _persistence;
@@ -15,7 +16,7 @@ public class DoctorsController : CustomControllerBase
         _persistence = persistence;
     }
     //POST
-    [HttpPost("doctors")]
+    [HttpPost()]
     public async Task<IActionResult> CreateDoctor(DoctorModel.Request request)
     {
         if (string.IsNullOrWhiteSpace(request.Name) ||
@@ -25,7 +26,7 @@ public class DoctorsController : CustomControllerBase
         }
     
 
-        var speciality = _persistence.GetSpecialityById(request.SpecialityId);
+        var speciality = await _persistence.GetSpecialityById(request.SpecialityId);
 
         if (speciality is null)
         {
@@ -33,31 +34,31 @@ public class DoctorsController : CustomControllerBase
         }
 
         var doctor = new Doctor(request.Name, request.LicenseNumber, speciality);
-        _persistence.SaveDoctor(doctor);
+        await _persistence.SaveDoctor(doctor);
 
         return Created();
 
     }
     //GET (todos)
-    [HttpGet("doctors")]
+    [HttpGet()]
     public async Task<IActionResult> GetDoctors()
     {
-        var activeDoctors = _persistence.GetAllActiveDoctors();
+        var activeDoctors = await _persistence.GetAllActiveDoctors();
 
-        var responseList = activeDoctors.Select(doctor => new DoctorModel.Response(
-            doctor.Name,
-            doctor.LicenseNumber,
-            doctor.Speciality?.Name ?? "Sin especialidad"
+        var responseList = activeDoctors.Select(d => new DoctorModel.Response(
+            d.Name,
+            d.LicenseNumber,
+            d.Speciality?.Name ?? "Sin especialidad"
         ));
 
         return Ok(responseList);
     }
 
     //GET (por id)
-    [HttpGet("doctors/{id}")]
-    public async Task<IActionResult> GetDoctorById(Guid id)
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetDoctorById([FromRoute] Guid id)
     {
-        var doctor = _persistence.GetDoctorById(id);
+        var doctor = (await GetDoctor(id))!;
 
         if (doctor == null || !doctor.IsActive)
         {
@@ -65,20 +66,19 @@ public class DoctorsController : CustomControllerBase
         }
 
         var response = new DoctorModel.Response(
-        doctor.Name,
-        doctor.LicenseNumber,
-        doctor.Speciality?.Name ?? "Sin especialidad"
-    );
+            doctor.Name,
+            doctor.LicenseNumber,
+            doctor.Speciality?.Name ?? "Sin especialidad"
+            );
 
-       
         return Ok(response);
     }
 
-    [HttpDelete("doctors/{id}")]
+    [HttpDelete("{id}")]
     //DELETE
-    public async Task<IActionResult> DeleteDoctor(Guid id)
+    public async Task<IActionResult> DeleteDoctor([FromRoute] Guid id)
     {
-        var doctor = _persistence.GetDoctorById(id);
+        var doctor = (await GetDoctor(id))!;
 
         if (doctor == null || !doctor.IsActive)
         {
@@ -86,9 +86,13 @@ public class DoctorsController : CustomControllerBase
         }
 
         doctor.Deactivate();
-
-
+        await _persistence.UpdateDoctor(doctor);
         return NoContent(); 
+    }
+
+    private async Task<Doctor?> GetDoctor(Guid id)
+    {
+        return await _persistence.GetDoctorById(id) ?? throw new EntityNotFoundException("Medico no encontrado");
     }
 }
 

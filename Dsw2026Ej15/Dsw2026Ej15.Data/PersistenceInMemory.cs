@@ -19,26 +19,31 @@ public class PersistenceInMemory : IPersistence
         LoadSpecialities();
     }
 
-    public IEnumerable<Doctor> GetAllActiveDoctors() //hacer async para el ej16
+    public async Task<IEnumerable<Doctor>> GetAllActiveDoctors()
     {
         return _doctors.Where(d => d.IsActive);
     }
 
-    public Doctor? GetDoctorById(Guid id)
+    public async Task<Doctor?> GetDoctorById(Guid id)
     {
-        return _doctors.SingleOrDefault(d => d.Id == id);
+        return _doctors.SingleOrDefault(d => d.Id == id && d.IsActive);
     }
 
-    public Speciality? GetSpecialityById(Guid id)
+    public async Task<Speciality?> GetSpecialityById(Guid id)
     {
         return _specialities.SingleOrDefault(e => e.Id == id);
     }
 
-    public void SaveDoctor(Doctor doctor)
+    public async Task SaveDoctor(Doctor doctor)
     {
         _doctors.Add(doctor);
     }
 
+    public async Task UpdateDoctor(Doctor doctor)
+    {
+        _doctors.Remove(doctor);
+        _doctors.Add(doctor);
+    }
     private void LoadSpecialities()
     {
         try
