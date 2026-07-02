@@ -17,6 +17,9 @@ public class DoctorsController : CustomControllerBase
     }
     //POST
     [HttpPost()]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> CreateDoctor(DoctorModel.Request request)
     {
         if (string.IsNullOrWhiteSpace(request.Name) ||
@@ -24,7 +27,7 @@ public class DoctorsController : CustomControllerBase
         {
             throw new ValidationException("El campo name y licenseNumber no pueden estar vacíos");
         }
-    
+
 
         var speciality = await _persistence.GetSpecialityById(request.SpecialityId);
 
@@ -35,12 +38,14 @@ public class DoctorsController : CustomControllerBase
 
         var doctor = new Doctor(request.Name, request.LicenseNumber, speciality);
         await _persistence.SaveDoctor(doctor);
-
+        Console.WriteLine("Id del Doctor: " + doctor.Id); // para tener el id a fines de prueba sin meter breakpoints
         return Created();
 
     }
     //GET (todos)
     [HttpGet()]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetDoctors()
     {
         var activeDoctors = await _persistence.GetAllActiveDoctors();
@@ -56,6 +61,9 @@ public class DoctorsController : CustomControllerBase
 
     //GET (por id)
     [HttpGet("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetDoctorById([FromRoute] Guid id)
     {
         var doctor = (await GetDoctor(id))!;
@@ -73,9 +81,12 @@ public class DoctorsController : CustomControllerBase
 
         return Ok(response);
     }
-
-    [HttpDelete("{id}")]
+    
     //DELETE
+    [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteDoctor([FromRoute] Guid id)
     {
         var doctor = (await GetDoctor(id))!;

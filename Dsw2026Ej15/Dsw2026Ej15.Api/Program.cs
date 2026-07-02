@@ -1,3 +1,4 @@
+using Dsw2026Ej15.Api.Configurations;
 using Dsw2026Ej15.Api.Middlewares;
 using Dsw2026Ej15.Data;
 using Dsw2026Ej15.Domain.Interfaces;
@@ -11,7 +12,8 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        var connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Database=Dsw2026Ej16;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;";
+        var connectionString = builder.Configuration
+                .GetConnectionString("DefaultConnection");
 
         // Add services to the container.
         builder.Services.AddDbContext<Dsw2026Ej15DbContext>(options =>
@@ -21,9 +23,9 @@ public class Program
 
         builder.Services.AddControllers();
 
-        builder.Services.AddSwaggerGen(); // Swagger en vez de openApi
-        
-        builder.Services.AddScoped<IPersistence, PersistenceEF>(); // Registro como Scoped para EF
+        builder.Services.AddSwaggerGen();
+
+        builder.Services.AddPersistence();
 
         builder.Services.AddHealthChecks();
 
